@@ -103,7 +103,8 @@ At K=30, the PoC visible proxy covers 13/15 cells, weight 39/48 (81.25%), includ
 
 An additional risk outside the three prioritized rows is C08 (hard, weight 4, only `clip_101`); verify it before relying on its apparent coverage. The structured worksheet is [`t01_review_capture_plan.csv`](t01_review_capture_plan.csv). It records proposed decisions, not approvals; reviewer name, actual decision, note, and review status remain pending.
 - Current machine decision: **REWORK**, reason code `UNCOVERABLE_TARGET_CELLS`, owner Ngô Ngọc Trường (Lead), based on C13/C15 in `out/poc/decision.json`. This is a pipeline decision from visible metadata, not human approval.
-- `out/poc/audit_log.jsonl` contains the pipeline's `greedy_select` event. No reviewer event exists yet. Add reviewer evidence only after actual clip inspection; do not fabricate audit records.
+- **Review mechanism:** the reviewer fills `out/poc/review_queue_reviewed.csv` (copy of `review_queue.csv`: `reviewer`, `reviewer_decision` ∈ approve/reject/edit/escalate/skip, `review_note`, `reviewed_at`) and re-runs the PoC. Every decision is written to `audit_log.jsonl` as `review:<decision>` (actor = reviewer, reason = note), plus a `review:summary` event. `reject` also logs `override:reject`, removes the clip and re-runs greedy, keeping the original pick in `pick_raw.csv`. A reviewed row without a reviewer name makes the run fail.
+- `out/poc/audit_log.jsonl` currently contains only the pipeline's `greedy_select` event. No reviewer event exists yet. Add reviewer evidence only after an actual review; T01 has metadata only (no footage), so review notes must say the judgment is based on metadata. Do not fabricate audit records.
 
 ## 08 · Reproduction and tests
 
@@ -120,7 +121,7 @@ Runs completed successfully offline on branch `dev` at commit `160c449`, from a 
 ```
 
 - `tools.preflight`: 0 FAIL, 2 WARN (`data/real` and `models_optional/` absent; neither is used by T01). `tools.verify_manifests`: 14 manifests, 0 failing.
-- `pytest -q`: **69 passed, 39 skipped, 0 failed** (skips are other tracks' tests that need instructor GT). The group's T01 tests (`tests/test_t01_algo.py`, `tests/test_t01_metric.py`, `tests/test_t01_greedy_baseline.py`) are 22 passed, covering success cases and edge/failure cases (wildcard vs `unknown`, no recount of covered cells, exact K unique IDs, invalid picks, prefix consistency across budgets).
+- `pytest -q`: **71 passed, 39 skipped, 0 failed** (skips are other tracks' tests that need instructor GT). The group's T01 tests (`tests/test_t01_algo.py`, `tests/test_t01_metric.py`, `tests/test_t01_greedy_baseline.py`, `tests/test_t01_review_audit.py`) are 24 passed, covering success cases and edge/failure cases (wildcard vs `unknown`, no recount of covered cells, exact K unique IDs, invalid picks, prefix consistency across budgets, every reviewer decision audited, reviewed row without reviewer fails).
 - All three `src.main` runs exited 0. Running the PoC twice gives a byte-identical `pick.csv` (deterministic; no RNG used).
 - Outputs under `out/` are git-ignored; regenerate them with the commands above. Environment: Python 3.14.3, Windows 11 (10.0.26200), Intel64 Family 6 Model 141 Stepping 1. `make` is not available on Windows, so the commands are given without it. On Windows, `.gitattributes` forces LF on fixture text files; without it, `core.autocrlf` breaks manifest hashes.
 
@@ -148,7 +149,8 @@ See [`team_contributions.csv`](team_contributions.csv). Members 1–4 are mapped
 - [x] Baseline-versus-PoC bar chart prepared for the demo (visible proxy only).
 - [x] Manifest verification reported 14 manifests, 0 failures in the data-analysis artifact.
 - [x] Greedy set-cover baseline and ablation (Section 04b); PoC ties greedy on coverage, wins on cost only.
-- [x] `pytest -q`: 69 passed, 39 skipped, 0 failed (22 group T01 tests).
+- [x] `pytest -q`: 71 passed, 39 skipped, 0 failed (24 group T01 tests).
+- [x] Every reviewer decision (not only reject) is recorded in the audit log.
 - [ ] Official verified-tag evaluation / instructor result.
 - [ ] Human reviewer completes worksheet and records actual decisions plus audit evidence.
 - [ ] Member 5 identity/commit and presenter status; tags and deadline.

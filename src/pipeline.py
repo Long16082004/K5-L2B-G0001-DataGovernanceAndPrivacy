@@ -299,6 +299,19 @@ def review(ctx: RunContext, scored: pd.DataFrame, queue: pd.DataFrame, data: dic
         return scored
     reviewed = load_review_decisions(reviewed_path)
     ctx.stats["n_reviewed"] = len(reviewed)
+    # Mọi quyết định của người duyệt đều vào audit log (không chỉ reject), để có dấu vết human-in-the-loop
+    # kể cả khi người duyệt chấp nhận hết. `reject` còn có thêm sự kiện override:reject khi được áp dụng bên dưới.
+    picked = set(scored[scored.columns[0]].astype(str))
+    for r in reviewed.itertuples(index=False):
+        ctx.audit.log(actor=r.reviewer, action=f"review:{r.reviewer_decision}", item_id=str(r.item_id),
+                      before="picked" if str(r.item_id) in picked else "not_in_pick",
+                      after=r.override_value or None, reason=r.review_note, reviewed_at=r.reviewed_at,
+                      queue_rank=r.rank, queue_reason=r.reason)
+    counts = reviewed["reviewer_decision"].value_counts().to_dict()
+    ctx.stats["review_decisions"] = counts
+    ctx.audit.log(actor="pipeline", action="review:summary", item_id=ctx.track, after=counts,
+                  reason=f"{len(reviewed)}/{len(queue)} dòng trong hàng chờ đã được duyệt",
+                  reviewers=sorted(set(reviewed["reviewer"])))
     if ctx.track != "t01" or data is None:
         return scored
     rejected = set(reviewed.loc[reviewed["reviewer_decision"] == "reject", "item_id"].astype(str))
