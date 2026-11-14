@@ -1,148 +1,128 @@
-# Group Report — Day 06 Data Lab (Field-to-Release PoC)
+# Group Report — Day 06 Data Lab: T01 Coverage Planner
 
-> Điền đầy đủ, cụ thể, không viết chung chung. Mọi con số phải lấy từ file do script sinh ra
-> (`reports/metrics_*.json`, `reports/table1_baseline_vs_poc.md`) — không gõ tay, không làm tròn mất đơn vị.
-> 3–5 trang (hoặc README + report.md tương đương).
+> T01 PoC and random baseline were run offline on the visible fixture metadata. All scores below are **visible-metadata proxy results**, not official evaluation: verified GT is absent from this student checkout. Official values must be supplied by the instructor evaluator and must replace or supplement these proxy values with clear labels.
 
 ## 00 · Header
 
-| Mục | Giá trị |
+| Item | Value |
 |---|---|
-| Group ID | G__ |
-| Challenge | T__ · ______________________ |
-| Thành viên (5–6) + vai trò | 1. ____ (Lead/Integrator) · 2. ____ (Data & fixtures) · 3. ____ (Core algorithm) · 4. ____ (QA/metric) · 5. ____ (Review + report) · 6. ____ |
-| Git URL | ____ |
-| Tag `demo-180m` (commit) | ____ |
-| Tag `final-24h` (commit) | ____ |
-| Deadline (giờ VN) | ____ |
+| Group ID | G0001 |
+| Challenge | T01 · Coverage Planner |
+| Members and roles | Member 1 Lead/Integrator: Ngô Ngọc Trường (`truongnnhe172873`); Member 2 Data/Fixtures: LeVinhKhai; Member 3 Core algorithm: `Long16082004`; Member 4 QA/Metric: Pham Duy Thanh (`PDTnhah`); Member 5 Human Review/Report: name pending. |
+| Git URL | https://github.com/Long16082004/K5-L2B-G0001-DataGovernanceAndPrivacy |
+| Branch / analyzed commit | `feat/report` · `f9fbb8c` |
+| Demo/final tags; deadline | Not present / pending |
 
 ## 01 · Problem statement
 
-- Ai bị ảnh hưởng / ai chịu hậu quả khi hệ thống sai? ____
-- Điểm nghẽn cụ thể: ____
-- Đầu vào → đầu ra: ____
-- Tiêu chí GO / HOLD / REWORK (chốt trước khi chạy eval): ____
-- Giả định của nhóm (cần DPO/legal/domain owner xác nhận): ____
+Choose a small set of clips from a 120-clip candidate pool to cover 15 target scenarios with fixed risk weights. Poor coverage can leave rare or difficult driving scenes untested and mislead data collection or model evaluation teams.
 
-## 02 · Data & provenance
+- **Input → output:** candidate metadata and target matrix → K=30 selected clips, per-cell coverage evidence, human review of high-risk cells, and a capture plan for gaps.
+- **Decision policy:** the current pipeline returns REWORK when any target is uncovered in the visible metadata pool. The report recommends HOLD for unverified hard-cell tags and GO only after human verification and domain-owner sign-off. These are operational recommendations, not legal conclusions.
+- **Assumptions:** fixture tags are noisy planner-visible metadata. A match does not prove the visual scene is correct; unknown is not a verified match.
 
-| Split | N | Nguồn / link | License | Synthetic? |
-|---|---|---|---|---|
-| dev | 120 candidate clips + 15 target cells | `fixtures/t01_coverage/candidates.csv`, `fixtures/t01_coverage/targets.csv` | CC0-1.0 | Yes |
-| eval / heldout | 25 candidate clips | `fixtures/t01_coverage/holdout_candidates.csv` | CC0-1.0 | Yes |
-Lưu ý: `manifest.csv` hiện khai báo trường `split` là `na`; nhãn `dev` và `eval / heldout` ở bảng trên dùng theo cấu trúc bài lab để phân biệt main candidate pool và holdout candidate pool.
-- Schema & class mapping:
-  - Candidate: `clip_id, route, weather, light, object, risk, cost_min, duration_s`
-  - Target: `cell_id, route, weather, light, object, weight, is_hard`
-  - `*` trong target là wildcard.
-  - `unknown` trong candidate là metadata chưa xác định, không coi như wildcard.
+## 02 · Data and provenance
 
-- Seed: 42.
-- Main budget: K=30; holdout budget: K=6.
-- `manifest.csv` verified (sha256): **có** — lệnh: `python -m tools.verify_manifests`
-  - Kết quả: `14 manifests, 0 failing`.
-- Nguồn dữ liệu: synthetic, sinh bởi `tools/make_fixtures.py` với seed 42.
-- License: `CC0-1.0 (synthetic, generated for AI20K Day06)`.
-- Dữ liệu thật dùng: Không.
-Data quality: 11/120 candidate clips contain at least one explicit `unknown` value:
-  - weather: 5
-  - light: 3
-  - object: 3
-  - route: 0
-- Detailed analysis: `reports/t01_data_analysis.md`
+| Split | N | Source | License | Synthetic |
+|---|---:|---|---|---|
+| Main candidates | 120 clips | `fixtures/t01_coverage/candidates.csv` | CC0-1.0 as declared in fixture provenance | Yes |
+| Targets | 15 cells | `fixtures/t01_coverage/targets.csv` | Same fixture provenance | Yes |
+| Holdout candidates | 25 clips; K=6 | `fixtures/t01_coverage/holdout_candidates.csv` | Same fixture provenance | Yes |
 
-## 03 · Research & design
+Candidate fields: `clip_id, route, weather, light, object, risk, cost_min, duration_s`. Target fields: `cell_id, route, weather, light, object, weight, is_hard`. A target `*` matches any value. `unknown` does not match a specific required value. The supplied manifests were verified: `python -m tools.verify_manifests` reported 14 manifests and 0 failures (per checked-in data analysis). No real footage or hidden GT was used. The supplied `split` value is `na`; dev/holdout labels here describe the lab's file roles.
 
-- 2–3 references (URL + ngày xem) và **vì sao** chọn kỹ thuật: ____
-- Sơ đồ data flow (input → process → rank/QC → review → decision → report): ____
-- Thành phần offline (model/weights + checksum + license nếu có): ____
-- Trade-offs đã cân nhắc: ____
+There are 11/120 candidates with at least one unknown field: weather 5, light 3, object 3, route 0. See [`t01_data_analysis.md`](t01_data_analysis.md).
 
-## 04 · Baseline vs PoC
+## 03 · Research and design
 
-- Baseline (mô tả, version/config, commit): ____
-- PoC (mô tả, version/config, commit): ____
-- Cùng budget / cùng heldout / cùng seed: xác nhận ____
+- **References:** BDD100K official site and CVPR 2020 paper; Google Data Cards Playbook; ISO/IEC TR 5259-6:2026 as cited in the T01 handout. Access dates and relevance are listed in Section 11.
+- **Flow:** load and verify manifest → match candidates to targets → deterministic greedy weighted set cover with cost tie-break → fill remaining K slots with fragile/unknown/high-risk candidates under the committed rules → emit coverage, review queue, decision, and audit log.
+- **Offline components:** no model or network dependency.
+- **Trade-offs:** visible tags enable a fast, interpretable planner but can misstate actual scene coverage. Unknown values are excluded from strict coverage; backup selection may still surface them for human inspection. Greedy selection is deterministic and prioritizes marginal weighted gain, but the 30-clip budget can exceed what is needed to cover available cells.
 
-**Bảng 1 · Baseline vs PoC & hard slices** — dán output của
-`python -m src.compare reports/metrics_baseline.json reports/metrics_poc.json`:
+## 04 · Baseline versus PoC
 
-| Metric (unit) | Baseline | PoC | Δ & chú thích |
-|---|---|---|---|
-| Primary: ______ | ____ | ____ | ____; higher/lower? |
-| Hard-slice: ______ | ____ | ____ | ____; N=__ |
-| Review@B / miss / FP | ____ | ____ | ____; B=__ |
-| Runtime / 100 items | ____ | ____ | ____; CPU=__ |
+Both runs used the same 120-clip pool, K=30, seed 42, offline mode, and were valid 30-row, unique-ID picks. The baseline is random (`src.examples.random_baseline`); the PoC is deterministic greedy weighted set cover (`src.pipeline`). Results below use the checked-in visible-proxy evaluator output [`t01_slices_visible_proxy.md`](t01_slices_visible_proxy.md), not hidden verified tags.
+
+| K | Run | Weighted Coverage@K (Σw/48) | Cells covered | Hard recall (n/4; Wilson 95%) | Duplicate scenarios | Cost / covered cell (min) |
+|---:|---|---:|---:|---:|---:|---:|
+| 10 | Random | 0.0833 (4/48) | 2/15 | 0/4; 0.00 [0.00, 0.49] | 0 | 57.50 |
+| 10 | PoC | 0.7292 (35/48) | 10/15 | 4/4; 1.00 [0.51, 1.00] | 0 | 5.30 |
+| 20 | Random | 0.2708 (13/48) | 5/15 | 1/4; 0.25 [0.05, 0.70] | 4 | 34.00 |
+| 20 | PoC | 0.8125 (39/48) | 13/15 | 4/4; 1.00 [0.51, 1.00] | 5 | 10.00 |
+| 30 | Random | 0.3750 (18/48) | 7/15 | 1/4; 0.25 [0.05, 0.70] | 12 | 33.14 |
+| 30 | PoC | 0.8125 (39/48) | 13/15 | 4/4; 1.00 [0.51, 1.00] | 7 | 16.46 |
+
+At K=30, the visible-proxy difference is +21 weight points / 48 and +3/4 hard cells. This is not evidence of official performance: PoC optimizes the same noisy visible metadata used by the proxy evaluator, so its score may be optimistic. Wilson intervals are wide because the hard slice has only four cells. See the detailed report for per-budget changes and caveats.
+
+The requested baseline comparison bar chart is [`t01_coverage_proxy.png`](../demo/t01_coverage_proxy.png); it is explicitly labeled as visible-metadata proxy.
 
 ## 05 · Evaluation protocol
 
-- Công thức primary metric, đơn vị đánh giá, TP/FP/FN, denominator: ____ (xem `reports/metric_contract.md`)
-- Threshold / budget B / K và lúc chốt: ____
-- Độ bất định (CI/bootstrap/variance) khi N nhỏ: ____
-- Lệnh evaluate chính xác: `python -m src.evaluate --track t__ --pred ... --out ...`
+Primary metric: Weighted Coverage@K = total weight of covered target cells / fixed total target weight 48; each cell counts once. Higher is better. A cell is covered only when a selected clip's verified tags match all specified dimensions; target `*` is wildcard. K=30 is primary; report K=10/20/30 and holdout K=6 separately. Seed 42; do not tune on holdout. The full frozen contract is [`metric_contract.md`](metric_contract.md).
 
-## 06 · Result slices
+The checked-in visible-proxy run evaluates using visible `candidates.csv` tags in place of verified tags. This was done solely to exercise the evaluator and compare visible-metadata behavior. It is not the official score. No official verified-tag or hidden evaluation is available in this checkout.
 
-| Slice | N | Baseline | PoC | Ghi chú |
-|---|---|---|---|---|
-| | | | | |
-| | | | | |
+## 06 · Results, slices, and failure cases
 
-- Failure case 1 (ảnh/metadata + root cause): ____
-- Failure case 2: ____
-- Latency / compute (máy, CPU, ms/item): ____
+At K=30, the PoC visible proxy covers 13/15 cells, weight 39/48 (81.25%), including all 4 hard cells (18/18 hard weight). C13 and C15 remain uncovered. C08 and C09 are fragile single-candidate cells (`clip_101`, `clip_108`). PoC spends 214 minutes across selected clips, 16.462 minutes per covered cell, and selects 7 repeated scenarios. These values come from `out/poc/coverage.csv` and `out/poc/run_info.json` generated at commit `f9fbb8c`.
 
-## 07 · Human & decision
+- **Failure 1 — C13:** urban/fog/night/pedestrian has no strict visible metadata match. `clip_093` has unknown light; other fog/night candidates have another object. Inspect uncertain candidates, then capture if no verified match exists.
+- **Failure 2 — C15:** alley/rain/dusk/pedestrian has no strict visible metadata match. Capture that complete combination; do not claim coverage from a nearby scene.
+- **Fragility — C08/C09:** each has one visible candidate. Review `clip_101` and `clip_108`; a wrong tag would invalidate apparent coverage.
+- **Holdout visible check:** K=6, weighted coverage 0.3958, 2/4 hard cells covered, 0 duplicate scenarios. This is also a visible-tag proxy, not official heldout scoring.
+- Runtime: baseline 0.1451 s; PoC 0.2929 s on Windows 11, Python 3.15.2, Intel64 Family 6 Model 154 Stepping 4. Runtime is from `run_info.json` and reflects this environment only.
 
-- Review queue (file, B, cách ưu tiên): ____
-- Cách override + audit log (`out/audit_log.jsonl`): ____
-- Decision policy + `reason_code` + owner: ____
-- Khi nào HOLD/REWORK thay vì tự động release: ____
+## 07 · Human review and decision
 
-## 08 · Reproduce & tests
+- **Three prioritized review cells and capture proposals:**
 
-```bash
-make setup          # hoặc: python -m venv .venv && pip install -r requirements.txt
-python -m src.main --input fixtures/<track> --config configs/lab.yaml --output out/ --offline --seed 42
-python -m src.evaluate --track t__ --pred out/<file> --out reports/metrics_poc.json
-pytest -q
+| Cell / target | Coverage evidence | Proposed decision | Capture or verification action | Owner / reason | Reviewer |
+|---|---|---|---|---|---|
+| C09 · urban/rain/night/motorbike · w=5, hard | One visible match: `clip_108`; selected by PoC | HOLD pending verification | Verify all dimensions; capture a verified backup if it fails | Capture coordinator · protect single-point hard coverage | Domain reviewer; name pending |
+| C13 · urban/fog/night/pedestrian · w=5 | No strict visible match; `clip_093` has unknown light | REWORK if review finds no verified match | Inspect plausible fog/night clips; otherwise capture exact scenario | Capture coordinator · no strict match | Domain reviewer; name pending |
+| C15 · alley/rain/dusk/pedestrian · w=4 | No strict visible match | REWORK | Capture and verify the complete combination | Capture coordinator · no strict match | Domain reviewer; name pending |
+
+An additional risk outside the three prioritized rows is C08 (hard, weight 4, only `clip_101`); verify it before relying on its apparent coverage. The structured worksheet is [`t01_review_capture_plan.csv`](t01_review_capture_plan.csv). It records proposed decisions, not approvals; reviewer name, actual decision, note, and review status remain pending.
+- Current machine decision: **REWORK**, reason code `UNCOVERABLE_TARGET_CELLS`, owner Ngô Ngọc Trường (Lead), based on C13/C15 in `out/poc/decision.json`. This is a pipeline decision from visible metadata, not human approval.
+- `out/poc/audit_log.jsonl` contains the pipeline's `greedy_select` event. No reviewer event exists yet. Add reviewer evidence only after actual clip inspection; do not fabricate audit records.
+
+## 08 · Reproduction and tests
+
+Runs completed successfully offline at commit `f9fbb8c`:
+
+```powershell
+.\.venv\Scripts\python.exe -m src.main --track t01 --pipeline src.examples.random_baseline --output out/baseline --run-name baseline --offline --seed 42
+.\.venv\Scripts\python.exe -m src.main --config configs/lab.yaml --track t01 --output out/poc --run-name poc --offline --seed 42
+.\.venv\Scripts\python.exe -m src.t01_slices --run baseline=out/baseline/pick.csv --run poc=out/poc/pick.csv --visible-proxy --out reports/t01_slices_visible_proxy.md
 ```
 
-- Output của `pytest -q`: ____
-- Máy / CPU / OS / Python: ____ · git sha: ____
+Both `src.main` runs exited 0 and output validation passed. Tests were not run in this report update; record `pytest -q` output before submission. Outputs under `out/` are local/ignored and should be regenerated with the commands above. Run artifacts recorded Python 3.15.2, Windows 11, processor Intel64 Family 6 Model 154 Stepping 4.
 
-## 09 · Limitations & ethics
+## 09 · Limitations and ethics
 
-- Rủi ro pháp lý / PII / license: ____
-- Điều chưa biết; false alarms; nếu scale 10× thì sao: ____
-- Không tuyên bố "đạt GDPR / luật Việt Nam" từ checklist tự động; giả định cần DPO/legal xác nhận: ____
-- Kế hoạch cải tiến: ____
+Synthetic metadata does not establish real-world scene availability, visual correctness, licensing, or model performance. The visible proxy is optimistic by construction because the PoC selects against the same visible tags. Human visual verification and official verified-tag evaluation remain necessary. Do not commit real footage or PII without rights, privacy review, and access controls. No claim of GDPR or Vietnamese-law compliance is made; consult the domain owner and DPO/legal as applicable.
 
 ## 10 · Team contribution
 
-**Bảng 2 · Individual contribution evidence** (đối chiếu với `git shortlog -sne --all` và `reports/team_contributions.csv`)
-
-| Học viên | Git author/email | Module / vai trò | Commit SHA / diff chứng minh | Trình bày? |
-|---|---|---|---|---|
-| Member 1 | | Integration / CLI | | |
-| Member 2 | | Data + GT | | |
-| Member 3 | | Core algorithm | | |
-| Member 4 | | Metric + tests | | |
-| Member 5 | | Review queue + report | | |
-| Member 6 (nếu có) | | Research / ablation / debate | | |
+See [`team_contributions.csv`](team_contributions.csv). Members 1–4 are mapped to Git authors and relevant commits from `git shortlog -sne --all` and the visible commit history. Member 5's name and commit evidence, and presenter status for most members, remain pending. Git author labels are preserved where the legal/display name is not known.
 
 ## 11 · References
 
-| URL | Ngày xem | 1–2 dòng ý nghĩa (không chép nguyên văn) |
+| URL / source | Access date | Relevance |
 |---|---|---|
-| | | |
+| https://bdd-data.berkeley.edu/ | 2026-11-14 | Official BDD100K dataset context; no BDD footage used. |
+| https://openaccess.thecvf.com/content_CVPR_2020/papers/Yu_BDD100K_A_Diverse_Driving_Dataset_for_Heterogeneous_Multitask_Learning_CVPR_2020_paper.pdf | 2026-11-14 | BDD100K dataset paper cited by T01; no BDD footage used. |
+| https://sites.research.google/datacardsplaybook/ | 2026-11-14 | Guidance for documenting dataset provenance and limitations. |
+| ISO/IEC TR 5259-6:2026 (reference as cited in T01 handout) | 2026-11-14 (handout) | Data-quality reference; full text not independently accessed. |
 
----
+## Final completion checklist
 
-**Bảng 3 · Checklist chốt khi nộp**
-
-- [ ] Link repo và tag cuối cùng trong README; input mẫu không chứa PII thật.
-- [ ] Đúng 1 lệnh run, 1 lệnh evaluate, 1 lệnh tests; không cần download khi chạy.
-- [ ] Có baseline/PoC metrics, ≥1 failure case, reviewer evidence, decision log.
-- [ ] Có license/source provenance, data splits, seed, offline environment, GT/eval N.
-- [ ] Mỗi thành viên có ≥1 commit thực chất và được nêu minh bạch trong bảng trên.
+- [x] T01 offline baseline and PoC runs; picks validated at K=30.
+- [x] Visible proxy results for budgets 10/20/30 and holdout K=6, labeled non-official.
+- [x] Baseline-versus-PoC bar chart prepared for the demo (visible proxy only).
+- [x] Manifest verification reported 14 manifests, 0 failures in the data-analysis artifact.
+- [ ] Official verified-tag evaluation / instructor result.
+- [ ] Human reviewer completes worksheet and records actual decisions plus audit evidence.
+- [ ] `pytest -q` result; Member 5 identity/commit and presenter status; tags and deadline.
+- [ ] Present the 4-slide demo in [`../demo/t01_demo.md`](../demo/t01_demo.md).
