@@ -5,20 +5,20 @@
 
 | Mục | Khai báo của nhóm |
 |---|---|
-| Track | T__ |
-| Primary metric (tên đúng như evaluator in ra) | |
-| Tăng tốt hay giảm tốt? | higher / lower |
-| Đơn vị đánh giá (image / region / pair / release / batch / case …) | |
-| Công thức + numerator / denominator | |
-| Cách ghép prediction ↔ GT (IoU? id? tolerance?) | |
-| Candidate pool cố định | |
-| Review budget B / K | |
-| Seed | 42 |
-| Threshold policy (chọn trên dev như thế nào) | |
-| Eval split (không dùng để tune) | |
-| Chỉ số lỗi xấu (miss / false alarm / false reject) | |
-| Slices sẽ báo cáo (≥2) | |
-| Cách báo độ bất định khi N nhỏ (Wilson CI / bootstrap) | |
-| Ngày giờ chốt + người chốt | |
+| Track | T01 · Coverage Planner |
+| Primary metric (tên đúng như evaluator in ra) | `Weighted Coverage@K` (K = 30) | 
+| Tăng tốt hay giảm tốt? | higher |
+| Đơn vị đánh giá (image / region / pair / release / batch / case …) | **Ô coverage mục tiêu (target cell)**: 15 ô `C01–C15` trong `targets.csv`. Prediction là danh sách **clip** (`out/pick.csv`), nhưng metric chấm theo từng ô (covered = 1/0) |
+| Công thức + numerator / denominator | `WC@K = Σ w(c), c ∈ covered / Σ w(c), c ∈ 15 target`.<br>**Numerator** = tổng `weight` của các ô có ≥1 clip trong top-K phủ được; mỗi ô chỉ cộng **1 lần** dù nhiều clip phủ; một clip có thể phủ nhiều ô.<br>**Denominator = 48, cố định** = tổng `weight` của cả 15 ô, gồm cả ô pool không phủ nổi. Không chuẩn hoá lại theo “ô phủ được”, không bỏ ô khó ra khỏi mẫu số. |
+| Cách ghép prediction ↔ GT (IoU? id? tolerance?) | Ghép theo **`clip_id`** (khớp chính xác) → tag **verified** (`gt/verified_tags.csv`), không dùng metadata nhìn thấy trong `candidates.csv`.<br>Clip phủ ô khi **cả 4 chiều** `route, weather, light, object` thoả: giá trị của ô là `*` (wildcard, khớp mọi giá trị) **hoặc** bằng đúng tag verified (so chuỗi, không tolerance).<br>Clip không khớp ô nào → đóng góp 0. `clip_id` không có trong pool → bỏ qua. Có cột `rank` → sắp theo `rank`, lấy K dòng đầu. |
+| Candidate pool cố định | `fixtures/t01_coverage/candidates.csv`: **120 clip** (`clip_000`–`clip_119`), sha256 trong `manifest.csv`, kiểm bằng `python -m tools.verify_manifests`. 11/120 clip có ≥1 tag `unknown` (weather 5, light 3, object 3). Holdout: `holdout_candidates.csv` (25 clip). Baseline và PoC dùng chung pool, không thêm/bớt clip. |
+| Review budget B / K | **K = 30 clip** (budget tính theo số clip, không theo phút) = số chính thức. Đường budget: **K = 10 / 20 / 30** (`budgets_to_try`). Holdout: **K = 6**.<br>Ràng buộc nhóm: `pick.csv` có **đúng K dòng, K `clip_id` khác nhau, tất cả thuộc pool**. Evaluator tự bỏ trùng/clip lạ, nhưng nhóm coi đó là output lỗi (có test chặn). |
+| Seed | 42 (baseline random: `src.examples.random_baseline`, `--seed 42`, cùng pool, cùng K) |
+| Threshold policy (chọn trên dev như thế nào) | T01 **không có threshold score**. Thứ được chốt: K, trọng số trong `targets.csv` (**không sửa**), và tham số luật chọn của PoC (vd. cách xử lý tag `unknown`, tie-break theo cost). Tất cả ghi vào `configs/lab.yaml → params` và commit **trước** lần evaluate đầu tiên.<br>Chỉ tinh chỉnh trên metadata nhìn thấy của `candidates.csv`. Repo không có GT, nên không có “dev GT” để tune. Không tune trên holdout. |
+| Eval split (không dùng để tune) | (1) **Main eval**: `gt/verified_tags.csv` trên pool 120 clip, K = 30.<br>(2) **Holdout**: `gt/holdout_verified_tags.csv` trên 25 clip, K = 6, chạy 1 lần sau khi chốt, để kiểm tra luật có tổng quát không.<br>(3) **Hidden eval** của giảng viên (`tools.make_hidden_eval`, seed bí mật): điểm chính thức.<br>GT nằm ở repo private, nên pipeline chỉ được dựa vào luật, **không hard-code `clip_id`**. |
+| Chỉ số lỗi xấu (miss / false alarm / false reject) | **Miss ô hard** (nặng nhất): `Rare-scenario Recall@K` = số ô `is_hard=1` được phủ / 4 (C08–C11, Σw = 18/48). Bỏ sót C09/C10 (w = 5) là xấu nhất.<br>**Khai khống coverage** (false coverage, metadata sai làm tưởng đã phủ): ô mà `coverage.csv` của pipeline ghi “covered” theo metadata nhìn thấy nhưng evaluator báo `covered = 0`. Báo số ô và Σw bị khai khống.<br>**Phí budget**: `Duplicate clips in K` (lower) và số clip không phủ ô nào.<br>Phụ: `Cost per covered cell` (phút/ô, lower). |
+| Slices sẽ báo cáo (≥2) | 1. **Hard slice** `is_hard=1` (4 ô, Σw = 18): Rare-scenario Recall@K + Σw phủ / 18.<br>2. **Non-hard** `is_hard=0` (11 ô, Σw = 30): Σw phủ / 30.<br>3. **Budget** K = 10 / 20 / 30: WC@K và Rare Recall@K cho baseline và PoC, cùng pool, cùng seed.<br>4. **Holdout** K = 6.<br>5. Bảng **từng ô** (`cell_id, weight, is_hard, covered`, lấy từ slice table của evaluator) + danh sách ô còn thiếu → capture plan. |
+| Cách báo độ bất định khi N nhỏ (Wilson CI / bootstrap) | Metric tất định với một pick cố định, nhưng N rất nhỏ (15 ô, 4 ô hard), nên:<br>• Luôn ghi **số thô**: Σw `x/48`, số ô `y/15`, ô hard `z/4`, kèm %.<br>• Rare Recall@K kèm **Wilson 95% CI** (`src/metrics/estimation.py::wilson_ci`); vd. 2/4 → [0.15, 0.85]. Chênh ≤ 1 ô hard thì **không** kết luận “tốt hơn”.<br>• Random baseline: số chính thức là seed 42; báo thêm phân phối **1000 seed (0–999)**: mean và P2.5–P97.5 của WC@30, để thấy seed 42 không phải ca may/rủi.<br>• Holdout K = 6 là kiểm tra tổng quát hoá, không gộp vào số chính. |
+| Ngày giờ chốt + người chốt | 2026-11-14 · __:__ (giờ VN) · PDTnhah (Member 4 · QA/metric) |
 
 Nếu baseline = 0 thì ghi rõ "baseline = 0" thay vì phần trăm cải thiện.
