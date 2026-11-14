@@ -28,13 +28,28 @@
 
 | Split | N | Nguồn / link | License | Synthetic? |
 |---|---|---|---|---|
-| dev | | | | |
-| eval / heldout | | | | |
+| dev | 120 candidate clips + 15 target cells | `fixtures/t01_coverage/candidates.csv`, `fixtures/t01_coverage/targets.csv` | CC0-1.0 | Yes |
+| eval / heldout | 25 candidate clips | `fixtures/t01_coverage/holdout_candidates.csv` | CC0-1.0 | Yes |
+Lưu ý: `manifest.csv` hiện khai báo trường `split` là `na`; nhãn `dev` và `eval / heldout` ở bảng trên dùng theo cấu trúc bài lab để phân biệt main candidate pool và holdout candidate pool.
+- Schema & class mapping:
+  - Candidate: `clip_id, route, weather, light, object, risk, cost_min, duration_s`
+  - Target: `cell_id, route, weather, light, object, weight, is_hard`
+  - `*` trong target là wildcard.
+  - `unknown` trong candidate là metadata chưa xác định, không coi như wildcard.
 
-- Schema & class mapping: ____
-- Seed: 42 · Cách chia split (theo scene/group/segment?): ____
-- `manifest.csv` verified (sha256): có / không — lệnh: `python -m tools.verify_manifests`
-- Dữ liệu thật dùng (nếu có) và cách xây GT cho nó: ____
+- Seed: 42.
+- Main budget: K=30; holdout budget: K=6.
+- `manifest.csv` verified (sha256): **có** — lệnh: `python -m tools.verify_manifests`
+  - Kết quả: `14 manifests, 0 failing`.
+- Nguồn dữ liệu: synthetic, sinh bởi `tools/make_fixtures.py` với seed 42.
+- License: `CC0-1.0 (synthetic, generated for AI20K Day06)`.
+- Dữ liệu thật dùng: Không.
+Data quality: 11/120 candidate clips contain at least one explicit `unknown` value:
+  - weather: 5
+  - light: 3
+  - object: 3
+  - route: 0
+- Detailed analysis: `reports/t01_data_analysis.md`
 
 ## 03 · Research & design
 
