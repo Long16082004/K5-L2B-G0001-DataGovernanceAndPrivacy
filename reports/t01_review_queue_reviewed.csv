@@ -1,0 +1,11 @@
+rank,item_id,score,reason,suggested_action,slice,evidence_path,reviewer,reviewer_decision,override_value,review_note,reviewed_at
+1,clip_115,5.0,greedy_gain,,,,Ngô Ngọc Trường (Lead),approve,,"Chỉ duyệt metadata, không có footage. urban/rain/night/pedestrian đầy đủ, risk high hợp lý; phủ C10 (hard), pool có clip dự phòng clip_081.",2026-11-14T22:05
+2,clip_108,5.0,greedy_gain,,,,Ngô Ngọc Trường (Lead),approve,,"Chỉ duyệt metadata. Clip duy nhất phủ C09 (hard, w5); metadata nhất quán (mưa đêm, risk high). Chấp nhận, nhưng là điểm đơn: xem capture plan C09 (HOLD).",2026-11-14T22:05
+3,clip_081,5.0,backup_fragile,,,,Ngô Ngọc Trường (Lead),approve,,Chỉ duyệt metadata. Dự phòng cho C10 (hard): giữ để ô vẫn được phủ nếu clip_115 bị tag sai.,2026-11-14T22:05
+4,clip_101,4.0,greedy_gain,,,,Ngô Ngọc Trường (Lead),approve,,"Chỉ duyệt metadata. Clip duy nhất phủ C08 (hard, w4); alley/clear/night/pedestrian nhất quán. Chấp nhận; điểm đơn, cần kiểm footage trước release.",2026-11-14T22:05
+5,clip_114,3.0,greedy_gain,,,,Ngô Ngọc Trường (Lead),approve,,"Chỉ duyệt metadata. Metadata đầy đủ, không unknown; phủ C06, có dự phòng clip_118.",2026-11-14T22:05
+6,clip_032,3.0,greedy_gain,,,,Ngô Ngọc Trường (Lead),approve,,"Chỉ duyệt metadata. Metadata đầy đủ, không unknown; phủ C05, có dự phòng clip_092.",2026-11-14T22:05
+7,clip_092,3.0,backup_fragile,,,,Ngô Ngọc Trường (Lead),approve,,Chỉ duyệt metadata. Dự phòng cho C05 (pool chỉ 2 clip); giữ.,2026-11-14T22:05
+8,clip_118,3.0,backup_fragile,,,,Ngô Ngọc Trường (Lead),approve,,"Chỉ duyệt metadata. Dự phòng cho C06; đắt (14 phút) nhưng pool chỉ 2 clip, coverage đã bão hoà nên không có clip nào thêm trọng số để thay; giữ.",2026-11-14T22:05
+9,clip_055,2.0,greedy_gain,,,,Ngô Ngọc Trường (Lead),approve,,"Chỉ duyệt metadata. Metadata đầy đủ, không unknown; phủ C02.",2026-11-14T22:05
+10,clip_075,2.0,greedy_gain,,,,Ngô Ngọc Trường (Lead),approve,,"Chỉ duyệt metadata. Metadata đầy đủ, không unknown; phủ C14.",2026-11-14T22:05

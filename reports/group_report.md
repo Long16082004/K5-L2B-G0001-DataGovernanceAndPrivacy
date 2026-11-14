@@ -97,14 +97,15 @@ At K=30, the PoC visible proxy covers 13/15 cells, weight 39/48 (81.25%), includ
 
 | Cell / target | Coverage evidence | Proposed decision | Capture or verification action | Owner / reason | Reviewer |
 |---|---|---|---|---|---|
-| C09 · urban/rain/night/motorbike · w=5, hard | One visible match: `clip_108`; selected by PoC | HOLD pending verification | Verify all dimensions; capture a verified backup if it fails | Capture coordinator · protect single-point hard coverage | Domain reviewer; name pending |
-| C13 · urban/fog/night/pedestrian · w=5 | No strict visible match; `clip_093` has unknown light | REWORK if review finds no verified match | Inspect plausible fog/night clips; otherwise capture exact scenario | Capture coordinator · no strict match | Domain reviewer; name pending |
-| C15 · alley/rain/dusk/pedestrian · w=4 | No strict visible match | REWORK | Capture and verify the complete combination | Capture coordinator · no strict match | Domain reviewer; name pending |
+| C09 · urban/rain/night/motorbike · w=5, hard | One visible match: `clip_108`; selected by PoC | **HOLD** (reviewed) | Keep `clip_108`; verify footage before release; capture an urban/rain/night/motorbike backup if it fails. Nearest alternatives each miss one dimension (`clip_078`/`clip_107` clear; `clip_115`/`clip_081` pedestrian) | Capture coordinator · protect single-point hard coverage | Ngô Ngọc Trường (Lead) |
+| C13 · urban/fog/night/pedestrian · w=5 | No strict visible match; `clip_093` has unknown light | **REWORK** (reviewed) | `clip_093` (light unknown) is not sufficient evidence; `clip_016`/`clip_089` are fog/night but wrong object; `clip_082` is day. Capture urban/fog/night/pedestrian | Capture coordinator · no strict match | Ngô Ngọc Trường (Lead) |
+| C15 · alley/rain/dusk/pedestrian · w=4 | No strict visible match | **REWORK** (reviewed) | Nearest `clip_027`/`clip_084` are alley/rain/pedestrian but day, not dusk. Capture alley/rain/dusk/pedestrian | Capture coordinator · no strict match | Ngô Ngọc Trường (Lead) |
 
-An additional risk outside the three prioritized rows is C08 (hard, weight 4, only `clip_101`); verify it before relying on its apparent coverage. The structured worksheet is [`t01_review_capture_plan.csv`](t01_review_capture_plan.csv). It records proposed decisions, not approvals; reviewer name, actual decision, note, and review status remain pending.
+An additional risk outside the three prioritized rows is C08 (hard, weight 4, only `clip_101`); verify it before relying on its apparent coverage. The structured worksheet is [`t01_review_capture_plan.csv`](t01_review_capture_plan.csv). Reviewer Ngô Ngọc Trường (Lead) confirmed the proposed decisions on 2026-11-14 (`review_status` = `REVIEWED_<decision>`, with notes).
 - Current machine decision: **REWORK**, reason code `UNCOVERABLE_TARGET_CELLS`, owner Ngô Ngọc Trường (Lead), based on C13/C15 in `out/poc/decision.json`. This is a pipeline decision from visible metadata, not human approval.
 - **Review mechanism:** the reviewer fills `out/poc/review_queue_reviewed.csv` (copy of `review_queue.csv`: `reviewer`, `reviewer_decision` ∈ approve/reject/edit/escalate/skip, `review_note`, `reviewed_at`) and re-runs the PoC. Every decision is written to `audit_log.jsonl` as `review:<decision>` (actor = reviewer, reason = note), plus a `review:summary` event. `reject` also logs `override:reject`, removes the clip and re-runs greedy, keeping the original pick in `pick_raw.csv`. A reviewed row without a reviewer name makes the run fail.
-- `out/poc/audit_log.jsonl` currently contains only the pipeline's `greedy_select` event. No reviewer event exists yet. Add reviewer evidence only after an actual review; T01 has metadata only (no footage), so review notes must say the judgment is based on metadata. Do not fabricate audit records.
+- **Review performed (2026-11-14):** reviewer Ngô Ngọc Trường (Lead) reviewed all 10 rows of the review queue: **10 approve**, 0 reject/escalate/edit. Notes for each clip are in [`t01_review_queue_reviewed.csv`](t01_review_queue_reviewed.csv). The audit trail [`t01_audit_log.jsonl`](t01_audit_log.jsonl) (copied from `out/poc/`) holds 10 `review:approve` events with the reviewer as actor plus a `review:summary` event (`10/10`). No clip was rejected, so the pick is unchanged (no `pick_raw.csv`) and visible coverage stays 39/48; the machine decision stays **REWORK** (`UNCOVERABLE_TARGET_CELLS`).
+- **Limits of this review:** T01 has metadata only (no footage), so every judgment is based on metadata consistency, which every note states. Approving the single-candidate clips `clip_108` (C09) and `clip_101` (C08) accepts the tags as plausible, not as verified; footage must be checked before release. The reviewer is the Lead, who did not write the selection algorithm (Member 3).
 
 ## 08 · Reproduction and tests
 
@@ -152,6 +153,6 @@ See [`team_contributions.csv`](team_contributions.csv). Members 1–4 are mapped
 - [x] `pytest -q`: 71 passed, 39 skipped, 0 failed (24 group T01 tests).
 - [x] Every reviewer decision (not only reject) is recorded in the audit log.
 - [ ] Official verified-tag evaluation / instructor result.
-- [ ] Human reviewer completes worksheet and records actual decisions plus audit evidence.
+- [x] Human review: 10/10 queue rows and 3 capture-plan cells reviewed by Ngô Ngọc Trường (Lead); audit evidence in `reports/t01_audit_log.jsonl`.
 - [ ] Member 5 identity/commit and presenter status; tags and deadline.
 - [ ] Present the 4-slide demo in [`../demo/t01_demo.md`](../demo/t01_demo.md).
