@@ -11,7 +11,7 @@
 | Members and roles | Member 1 Lead/Integrator: Ngô Ngọc Trường (`truongnnhe172873`); Member 2 Data/Fixtures: LeVinhKhai; Member 3 Core algorithm: `Long16082004`; Member 4 QA/Metric: Pham Duy Thanh (`PDTnhah`); Member 5 Human Review/Report: kieubac2006 (`bac`). |
 | Git URL | https://github.com/Long16082004/K5-L2B-G0001-DataGovernanceAndPrivacy |
 | Branch / analyzed commit | `dev` (integration branch) · `160c449` |
-| Demo/final tags; deadline | `demo-180m` → `460e3e1`; `final-24h` pending; deadline pending |
+| Demo/final tags; deadline | `demo-180m` → `460e3e1`; `final-24h` = final submission commit on `main` (`git rev-parse final-24h`); deadline: demo +24h |
 
 ## 01 · Problem statement
 
@@ -132,7 +132,7 @@ Synthetic metadata does not establish real-world scene availability, visual corr
 
 ## 10 · Team contribution
 
-See [`team_contributions.csv`](team_contributions.csv). Members 1–5 are mapped to Git authors and relevant commits from `git shortlog -sne --all` and the visible commit history. Member 5's chosen report name is kieubac2006 and presenter status is No. Git author labels are preserved where the legal/display name is not known.
+See [`team_contributions.csv`](team_contributions.csv). Members 1–5 are mapped to Git authors and relevant commits from `git shortlog -sne --all` and the visible commit history. Member 5's chosen report name is kieubac2006 and presenter status is No. Git author labels are preserved where the legal/display name is not known. `git shortlog -sne --all` also lists `Tin Duong` and `loversky02`: they authored the starter repository (commits up to `b0ce8bf`, 2026-11-13, before group work began) and are not group members. Member 3 appears as both `Long16082004` and `Vu Van Long` (same email).
 
 ## 11 · References
 
@@ -155,5 +155,5 @@ See [`team_contributions.csv`](team_contributions.csv). Members 1–5 are mapped
 - [ ] Official verified-tag evaluation / instructor result.
 - [x] Human review: 10/10 queue rows and 3 capture-plan cells reviewed by Ngô Ngọc Trường (Lead); audit evidence in `reports/t01_audit_log.jsonl`.
 - [x] Member 5 identity and commit evidence: kieubac2006 (`bac`), see `team_contributions.csv`.
-- [ ] `final-24h` tag and deadline.
+- [x] `demo-180m` and `final-24h` tags; final clean-start check: preflight 0 FAIL, 71 passed / 0 failed, README contract commands exit 0, PoC deterministic.
 - [ ] Present the 4-slide demo in [`../demo/t01_demo.md`](../demo/t01_demo.md).
