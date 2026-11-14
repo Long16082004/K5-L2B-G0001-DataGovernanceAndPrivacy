@@ -1,0 +1,260 @@
+{
+  "track": "t01",
+  "source": "visible_proxy",
+  "gt": "fixtures/t01_coverage/candidates.csv (tag nhìn thấy)",
+  "k": 30,
+  "budgets": [
+    10,
+    20,
+    30
+  ],
+  "git_sha": "0a3ba2c",
+  "command": "python -m src.t01_slices --run baseline=out/baseline/pick.csv --run poc=out/poc/pick.csv --visible-proxy --out reports/t01_slices_visible_proxy.md",
+  "checks": [
+    {
+      "run": "baseline",
+      "pred": "out/baseline/pick.csv",
+      "k": 30,
+      "problems": []
+    },
+    {
+      "run": "poc",
+      "pred": "out/poc/pick.csv",
+      "k": 30,
+      "problems": []
+    }
+  ],
+  "rows": [
+    {
+      "run": "baseline",
+      "k": 10,
+      "n_picks_scored": 10,
+      "weighted_coverage": 0.08333333333333333,
+      "w_covered": 4.0,
+      "w_total": 48.0,
+      "cells_covered": 2,
+      "cells_total": 15,
+      "hard_cells_covered": 0,
+      "hard_cells_total": 4,
+      "rare_recall": 0.0,
+      "rare_recall_wilson95": [
+        0.0,
+        0.4899
+      ],
+      "hard_w_covered": 0.0,
+      "hard_w_total": 18.0,
+      "nonhard_w_covered": 4.0,
+      "nonhard_w_total": 30.0,
+      "duplicate_scenarios": 0.0,
+      "cost_per_covered_cell": 57.5,
+      "missing_cells": [
+        "C02",
+        "C03",
+        "C04",
+        "C05",
+        "C06",
+        "C08",
+        "C09",
+        "C10",
+        "C11",
+        "C12",
+        "C13",
+        "C14",
+        "C15"
+      ],
+      "missing_hard_cells": [
+        "C08",
+        "C09",
+        "C10",
+        "C11"
+      ],
+      "notes": [
+        "pick.csv has 30 rows but K=10; using first 10",
+        "missing cells: ['C02', 'C03', 'C04', 'C05', 'C06', 'C08', 'C09', 'C10', 'C11', 'C12', 'C13', 'C14', 'C15']"
+      ]
+    },
+    {
+      "run": "baseline",
+      "k": 20,
+      "n_picks_scored": 20,
+      "weighted_coverage": 0.2708333333333333,
+      "w_covered": 13.0,
+      "w_total": 48.0,
+      "cells_covered": 5,
+      "cells_total": 15,
+      "hard_cells_covered": 1,
+      "hard_cells_total": 4,
+      "rare_recall": 0.25,
+      "rare_recall_wilson95": [
+        0.0456,
+        0.6994
+      ],
+      "hard_w_covered": 5.0,
+      "hard_w_total": 18.0,
+      "nonhard_w_covered": 8.0,
+      "nonhard_w_total": 30.0,
+      "duplicate_scenarios": 4.0,
+      "cost_per_covered_cell": 34.0,
+      "missing_cells": [
+        "C02",
+        "C04",
+        "C05",
+        "C06",
+        "C08",
+        "C09",
+        "C11",
+        "C13",
+        "C14",
+        "C15"
+      ],
+      "missing_hard_cells": [
+        "C08",
+        "C09",
+        "C11"
+      ],
+      "notes": [
+        "pick.csv has 30 rows but K=20; using first 20",
+        "missing cells: ['C02', 'C04', 'C05', 'C06', 'C08', 'C09', 'C11', 'C13', 'C14', 'C15']"
+      ]
+    },
+    {
+      "run": "baseline",
+      "k": 30,
+      "n_picks_scored": 30,
+      "weighted_coverage": 0.375,
+      "w_covered": 18.0,
+      "w_total": 48.0,
+      "cells_covered": 7,
+      "cells_total": 15,
+      "hard_cells_covered": 1,
+      "hard_cells_total": 4,
+      "rare_recall": 0.25,
+      "rare_recall_wilson95": [
+        0.0456,
+        0.6994
+      ],
+      "hard_w_covered": 5.0,
+      "hard_w_total": 18.0,
+      "nonhard_w_covered": 13.0,
+      "nonhard_w_total": 30.0,
+      "duplicate_scenarios": 12.0,
+      "cost_per_covered_cell": 33.142857142857146,
+      "missing_cells": [
+        "C05",
+        "C06",
+        "C08",
+        "C09",
+        "C11",
+        "C13",
+        "C14",
+        "C15"
+      ],
+      "missing_hard_cells": [
+        "C08",
+        "C09",
+        "C11"
+      ],
+      "notes": [
+        "missing cells: ['C05', 'C06', 'C08', 'C09', 'C11', 'C13', 'C14', 'C15']"
+      ]
+    },
+    {
+      "run": "poc",
+      "k": 10,
+      "n_picks_scored": 10,
+      "weighted_coverage": 0.7291666666666666,
+      "w_covered": 35.0,
+      "w_total": 48.0,
+      "cells_covered": 10,
+      "cells_total": 15,
+      "hard_cells_covered": 4,
+      "hard_cells_total": 4,
+      "rare_recall": 1.0,
+      "rare_recall_wilson95": [
+        0.5101,
+        1.0
+      ],
+      "hard_w_covered": 18.0,
+      "hard_w_total": 18.0,
+      "nonhard_w_covered": 17.0,
+      "nonhard_w_total": 30.0,
+      "duplicate_scenarios": 0.0,
+      "cost_per_covered_cell": 5.3,
+      "missing_cells": [
+        "C01",
+        "C03",
+        "C13",
+        "C14",
+        "C15"
+      ],
+      "missing_hard_cells": [],
+      "notes": [
+        "pick.csv has 30 rows but K=10; using first 10",
+        "missing cells: ['C01', 'C03', 'C13', 'C14', 'C15']"
+      ]
+    },
+    {
+      "run": "poc",
+      "k": 20,
+      "n_picks_scored": 20,
+      "weighted_coverage": 0.8125,
+      "w_covered": 39.0,
+      "w_total": 48.0,
+      "cells_covered": 13,
+      "cells_total": 15,
+      "hard_cells_covered": 4,
+      "hard_cells_total": 4,
+      "rare_recall": 1.0,
+      "rare_recall_wilson95": [
+        0.5101,
+        1.0
+      ],
+      "hard_w_covered": 18.0,
+      "hard_w_total": 18.0,
+      "nonhard_w_covered": 21.0,
+      "nonhard_w_total": 30.0,
+      "duplicate_scenarios": 5.0,
+      "cost_per_covered_cell": 10.0,
+      "missing_cells": [
+        "C13",
+        "C15"
+      ],
+      "missing_hard_cells": [],
+      "notes": [
+        "pick.csv has 30 rows but K=20; using first 20",
+        "missing cells: ['C13', 'C15']"
+      ]
+    },
+    {
+      "run": "poc",
+      "k": 30,
+      "n_picks_scored": 30,
+      "weighted_coverage": 0.8125,
+      "w_covered": 39.0,
+      "w_total": 48.0,
+      "cells_covered": 13,
+      "cells_total": 15,
+      "hard_cells_covered": 4,
+      "hard_cells_total": 4,
+      "rare_recall": 1.0,
+      "rare_recall_wilson95": [
+        0.5101,
+        1.0
+      ],
+      "hard_w_covered": 18.0,
+      "hard_w_total": 18.0,
+      "nonhard_w_covered": 21.0,
+      "nonhard_w_total": 30.0,
+      "duplicate_scenarios": 7.0,
+      "cost_per_covered_cell": 16.46153846153846,
+      "missing_cells": [
+        "C13",
+        "C15"
+      ],
+      "missing_hard_cells": [],
+      "notes": [
+        "missing cells: ['C13', 'C15']"
+      ]
+    }
+  ]
+}
