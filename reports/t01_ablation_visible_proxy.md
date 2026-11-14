@@ -5,7 +5,7 @@
 > Thiên lệch: PoC chọn clip dựa trên chính các tag nhìn thấy này, còn random baseline thì không, nên số proxy của PoC **thiên lạc quan** và Δ PoC − Baseline bên dưới có thể **lớn hơn thực tế**: chấm bằng tag đã kiểm chứng có thể cho Δ nhỏ hơn (metadata sai → khai khống coverage).
 
 Sinh bởi script, không sửa tay: `python -m src.t01_slices --run random=out/baseline/pick.csv --run greedy_plain=out/ablation/greedy_plain/pick.csv --run greedy_cost=out/ablation/greedy_cost/pick.csv --run poc=out/ablation/poc/pick.csv --run greedy_unknown_wild=out/ablation/greedy_unknown_wild/pick.csv --config configs/lab.yaml --fixture fixtures\t01_coverage --visible-proxy --out out\ablation\slices.md`  
-git `eccc4ea` · 2026-11-14 21:46
+git `160c449` · 2026-11-14 21:47
 
 ## Kiểm tra pick.csv (đúng K dòng, K clip_id khác nhau, thuộc pool)
 

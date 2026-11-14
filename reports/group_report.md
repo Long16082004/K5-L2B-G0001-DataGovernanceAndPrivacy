@@ -10,7 +10,7 @@
 | Challenge | T01 · Coverage Planner |
 | Members and roles | Member 1 Lead/Integrator: Ngô Ngọc Trường (`truongnnhe172873`); Member 2 Data/Fixtures: LeVinhKhai; Member 3 Core algorithm: `Long16082004`; Member 4 QA/Metric: Pham Duy Thanh (`PDTnhah`); Member 5 Human Review/Report: name pending. |
 | Git URL | https://github.com/Long16082004/K5-L2B-G0001-DataGovernanceAndPrivacy |
-| Branch / analyzed commit | `feat/report` · `f9fbb8c` |
+| Branch / analyzed commit | `dev` (integration branch) · `160c449` |
 | Demo/final tags; deadline | Not present / pending |
 
 ## 01 · Problem statement
@@ -57,6 +57,22 @@ At K=30, the visible-proxy difference is +21 weight points / 48 and +3/4 hard ce
 
 The requested baseline comparison bar chart is [`t01_coverage_proxy.png`](../demo/t01_coverage_proxy.png); it is explicitly labeled as visible-metadata proxy.
 
+### 04b · Strong baseline: textbook greedy set cover, and ablation
+
+The T01 handout asks for a comparison against a greedy set-cover baseline, not only random. `src.examples.greedy_baseline` is a textbook weighted greedy set cover: pick the clip with the largest uncovered weight, tie-break by `clip_id`, and fill remaining slots by `clip_id` once no clip adds weight. The ablation adds one PoC rule at a time on the same pool, K, and seed. Full table: [`t01_ablation_visible_proxy.md`](t01_ablation_visible_proxy.md) (visible proxy, same evaluator `eval_t01`).
+
+| Run (K=30) | Weighted Coverage@K | Cells | Hard | Duplicate scenarios | Total min | Min / covered cell |
+|---|---:|---:|---:|---:|---:|---:|
+| Random (seed 42) | 0.3750 (18/48) | 7/15 | 1/4 | 12 | 232 | 33.14 |
+| Greedy plain (baseline) | 0.8125 (39/48) | 13/15 | 4/4 | 7 | 266 | 20.46 |
+| + cost tie-break (rule b) | 0.8125 (39/48) | 13/15 | 4/4 | 8 | 240 | 18.46 |
+| + fill rule (c) = **PoC** | 0.8125 (39/48) | 13/15 | 4/4 | 7 | 214 | 16.46 |
+| Greedy, `unknown` as wildcard (rule a removed) | 0.5833 (28/48) | 9/15 | 4/4 | 8 | 271 | 30.11 |
+
+**The PoC does not beat the greedy baseline on coverage.** At K=10, 20 and 30, and on holdout K=6, its weighted coverage, cells covered and hard recall equal the greedy baseline's (Δ = 0). Its gain is cost only: both pick 13 marginal-gain clips covering the same 13 cells, but the cost tie-break chooses cheaper clips for them (64 vs 94 minutes). Total cost is 53 vs 77 minutes at K=10 and 214 vs 266 minutes at K=30 (−4.0 min per covered cell). The fill rule (c) changes *which* extra clips are kept, not coverage: under visible tags, coverage saturates at 39/48 from K=20, and the last slots go to backups and high-risk clips (in the PoC, 13 clips are chosen for marginal gain; the other 17 are fill: 9 risk-high, 5 fragile-cell backups, 1 unknown-may-cover, 2 diverse). Whether those backups pay off can only be shown with verified tags, if a primary clip turns out to be mislabeled.
+
+Treating `unknown` as a wildcard makes greedy confidently pick clips whose unknown tag "matches"; under visible scoring this drops coverage to 28/48. This is penalized by construction (the proxy scores `unknown` as non-matching), so it measures how much apparent coverage rests on unverified tags rather than a true score. It supports rule (a), but the real effect needs the verified-tag evaluation.
+
 ## 05 · Evaluation protocol
 
 Primary metric: Weighted Coverage@K = total weight of covered target cells / fixed total target weight 48; each cell counts once. Higher is better. A cell is covered only when a selected clip's verified tags match all specified dimensions; target `*` is wildcard. K=30 is primary; report K=10/20/30 and holdout K=6 separately. Seed 42; do not tune on holdout. The full frozen contract is [`metric_contract.md`](metric_contract.md).
@@ -65,13 +81,15 @@ The checked-in visible-proxy run evaluates using visible `candidates.csv` tags i
 
 ## 06 · Results, slices, and failure cases
 
-At K=30, the PoC visible proxy covers 13/15 cells, weight 39/48 (81.25%), including all 4 hard cells (18/18 hard weight). C13 and C15 remain uncovered. C08 and C09 are fragile single-candidate cells (`clip_101`, `clip_108`). PoC spends 214 minutes across selected clips, 16.462 minutes per covered cell, and selects 7 repeated scenarios. These values come from `out/poc/coverage.csv` and `out/poc/run_info.json` generated at commit `f9fbb8c`.
+At K=30, the PoC visible proxy covers 13/15 cells, weight 39/48 (81.25%), including all 4 hard cells (18/18 hard weight). C13 and C15 remain uncovered. C08 and C09 are fragile single-candidate cells (`clip_101`, `clip_108`). PoC spends 214 minutes across selected clips, 16.462 minutes per covered cell, and selects 7 repeated scenarios. These values come from `out/poc/coverage.csv` and `out/poc/run_info.json` generated at commit `160c449`.
+
+- **Repeated scenarios (handout failure mode "chọn lại toàn cảnh giống nhau"):** the 7 duplicates at K=30 are fill-phase picks made after coverage saturated, not greedy picks: the 13 marginal-gain clips are all distinct scenarios. The greedy baseline has the same count (7), and random has 12. At K=10 there are 0 duplicates. If a smaller budget is acceptable, K=20 reaches the same visible coverage.
 
 - **Failure 1 — C13:** urban/fog/night/pedestrian has no strict visible metadata match. `clip_093` has unknown light; other fog/night candidates have another object. Inspect uncertain candidates, then capture if no verified match exists.
 - **Failure 2 — C15:** alley/rain/dusk/pedestrian has no strict visible metadata match. Capture that complete combination; do not claim coverage from a nearby scene.
 - **Fragility — C08/C09:** each has one visible candidate. Review `clip_101` and `clip_108`; a wrong tag would invalidate apparent coverage.
 - **Holdout visible check:** K=6, weighted coverage 0.3958, 2/4 hard cells covered, 0 duplicate scenarios. This is also a visible-tag proxy, not official heldout scoring.
-- Runtime: baseline 0.1451 s; PoC 0.2929 s on Windows 11, Python 3.15.2, Intel64 Family 6 Model 154 Stepping 4. Runtime is from `run_info.json` and reflects this environment only.
+- Runtime: baseline 0.0268 s; PoC 0.3537 s on Windows 11 (10.0.26200), Python 3.14.3, Intel64 Family 6 Model 141 Stepping 1. Runtime is from `run_info.json` at commit `160c449` and reflects this environment only.
 
 ## 07 · Human review and decision
 
@@ -89,15 +107,22 @@ An additional risk outside the three prioritized rows is C08 (hard, weight 4, on
 
 ## 08 · Reproduction and tests
 
-Runs completed successfully offline at commit `f9fbb8c`:
+Runs completed successfully offline on branch `dev` at commit `160c449`, from a clean `out/`:
 
 ```powershell
+.\.venv\Scripts\python.exe -m tools.preflight
+.\.venv\Scripts\python.exe -m pytest -q
 .\.venv\Scripts\python.exe -m src.main --track t01 --pipeline src.examples.random_baseline --output out/baseline --run-name baseline --offline --seed 42
+.\.venv\Scripts\python.exe -m src.main --track t01 --pipeline src.examples.greedy_baseline --output out/greedy --run-name greedy --offline --seed 42
 .\.venv\Scripts\python.exe -m src.main --config configs/lab.yaml --track t01 --output out/poc --run-name poc --offline --seed 42
 .\.venv\Scripts\python.exe -m src.t01_slices --run baseline=out/baseline/pick.csv --run poc=out/poc/pick.csv --visible-proxy --out reports/t01_slices_visible_proxy.md
+.\.venv\Scripts\python.exe -m src.t01_ablation --visible-proxy --out reports/t01_ablation_visible_proxy.md
 ```
 
-Both `src.main` runs exited 0 and output validation passed. Tests were not run in this report update; record `pytest -q` output before submission. Outputs under `out/` are local/ignored and should be regenerated with the commands above. Run artifacts recorded Python 3.15.2, Windows 11, processor Intel64 Family 6 Model 154 Stepping 4.
+- `tools.preflight`: 0 FAIL, 2 WARN (`data/real` and `models_optional/` absent; neither is used by T01). `tools.verify_manifests`: 14 manifests, 0 failing.
+- `pytest -q`: **69 passed, 39 skipped, 0 failed** (skips are other tracks' tests that need instructor GT). The group's T01 tests (`tests/test_t01_algo.py`, `tests/test_t01_metric.py`, `tests/test_t01_greedy_baseline.py`) are 22 passed, covering success cases and edge/failure cases (wildcard vs `unknown`, no recount of covered cells, exact K unique IDs, invalid picks, prefix consistency across budgets).
+- All three `src.main` runs exited 0. Running the PoC twice gives a byte-identical `pick.csv` (deterministic; no RNG used).
+- Outputs under `out/` are git-ignored; regenerate them with the commands above. Environment: Python 3.14.3, Windows 11 (10.0.26200), Intel64 Family 6 Model 141 Stepping 1. `make` is not available on Windows, so the commands are given without it. On Windows, `.gitattributes` forces LF on fixture text files; without it, `core.autocrlf` breaks manifest hashes.
 
 ## 09 · Limitations and ethics
 
@@ -122,7 +147,9 @@ See [`team_contributions.csv`](team_contributions.csv). Members 1–4 are mapped
 - [x] Visible proxy results for budgets 10/20/30 and holdout K=6, labeled non-official.
 - [x] Baseline-versus-PoC bar chart prepared for the demo (visible proxy only).
 - [x] Manifest verification reported 14 manifests, 0 failures in the data-analysis artifact.
+- [x] Greedy set-cover baseline and ablation (Section 04b); PoC ties greedy on coverage, wins on cost only.
+- [x] `pytest -q`: 69 passed, 39 skipped, 0 failed (22 group T01 tests).
 - [ ] Official verified-tag evaluation / instructor result.
 - [ ] Human reviewer completes worksheet and records actual decisions plus audit evidence.
-- [ ] `pytest -q` result; Member 5 identity/commit and presenter status; tags and deadline.
+- [ ] Member 5 identity/commit and presenter status; tags and deadline.
 - [ ] Present the 4-slide demo in [`../demo/t01_demo.md`](../demo/t01_demo.md).

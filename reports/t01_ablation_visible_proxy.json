@@ -8,7 +8,7 @@
     20,
     30
   ],
-  "git_sha": "eccc4ea",
+  "git_sha": "160c449",
   "command": "python -m src.t01_slices --run random=out/baseline/pick.csv --run greedy_plain=out/ablation/greedy_plain/pick.csv --run greedy_cost=out/ablation/greedy_cost/pick.csv --run poc=out/ablation/poc/pick.csv --run greedy_unknown_wild=out/ablation/greedy_unknown_wild/pick.csv --config configs/lab.yaml --fixture fixtures\\t01_coverage --visible-proxy --out out\\ablation\\slices.md",
   "checks": [
     {

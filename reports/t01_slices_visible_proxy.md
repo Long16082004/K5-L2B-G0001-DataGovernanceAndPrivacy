@@ -5,7 +5,7 @@
 > Thiên lệch: PoC chọn clip dựa trên chính các tag nhìn thấy này, còn random baseline thì không, nên số proxy của PoC **thiên lạc quan** và Δ PoC − Baseline bên dưới có thể **lớn hơn thực tế**: chấm bằng tag đã kiểm chứng có thể cho Δ nhỏ hơn (metadata sai → khai khống coverage).
 
 Sinh bởi script, không sửa tay: `python -m src.t01_slices --run baseline=out/baseline/pick.csv --run poc=out/poc/pick.csv --visible-proxy --out reports/t01_slices_visible_proxy.md`  
-git `f9fbb8c` · 2026-11-14 17:26
+git `160c449` · 2026-11-14 21:47
 
 ## Kiểm tra pick.csv (đúng K dòng, K clip_id khác nhau, thuộc pool)
 
