@@ -2,7 +2,7 @@
 
 ## Đã hoàn thành sau khi cập nhật nhánh
 
-- [x] Xác nhận workspace ở `feat/report`, khớp `origin/feat/report`, HEAD `f9fbb8c`.
+- [x] Xác nhận workspace ở `feat/report`, khớp `origin/feat/report`, HEAD `6475a2a`.
 - [x] Đọc output T01 đã tích hợp: thuật toán greedy, config G0001/T01, metric contract và data analysis.
 - [x] Chạy random baseline và PoC offline; cả hai trả exit 0, pick K=30 hợp đồng.
 - [x] Sinh lại báo cáo slices visible-proxy cho K=10/20/30; ghi rõ không phải official score do thiếu verified GT.
@@ -14,7 +14,8 @@
 - [ ] Domain reviewer thực sự xem/kiểm tra C08 `clip_101`, C09 `clip_108`, C13 candidate khả nghi; ký quyết định, ghi reviewer/note và lưu audit evidence. Worksheet hiện vẫn `PENDING`.
 - [ ] Bổ sung kết quả verified-tag evaluation từ giảng viên (GT không có trong checkout). Visible proxy không được trình bày như điểm chính thức.
 - [ ] Chạy `pytest -q` và thêm kết quả vào report.
-- [ ] Chốt tên/email/commit evidence của Member 5 và presenter status; Members 1–4 đã được ghi từ Git history/contribution notes.
+- [x] Ghi Git author/email và commit evidence của Member 5 (`bac`, `kieubac2006@gmail.com`, `6475a2a`) vào contribution sheet.
+- [x] Ghi tên report `kieubac2006` và presenter status `No`; Members 1–4 được ghi từ Git history/contribution notes.
 - [ ] Bổ sung tag demo/final và ngày deadline.
 
 ## Cách đọc worksheet
