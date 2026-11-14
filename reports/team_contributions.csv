@@ -1,6 +1,6 @@
 member,git_author_name,git_email,role,modules_files,commit_shas,evidence_note,presenter
-Member 1,,,Lead / Integrator,src/main.py; configs/,,,
-Member 2,,,Data & fixtures,fixtures/; tools/,,,
-Member 3,,,Core algorithm,src/pipeline.py,,,
-Member 4,,,QA / metric,tests/; reports/metrics_*.json,,,
-Member 5,,,Human review + report,reports/group_report.md; demo/,,,
+Member 1,truongnnhe172873,nntruong79230@gmail.com,Lead / Integrator,configs/lab.yaml; configs/tracks/t01.yaml,2f4703c; aa9e66d,T01 group configuration and owner setup,Pending
+Member 2,LeVinhKhai,levinhkhai17092005@gmail.com,Data & fixtures,tools/t01_data_analysis.py; reports/t01_data_analysis.md; reports/group_report.md,3803de8; c0f103d,T01 data profiling; manifest verification; unknown metadata analysis; planner-visible coverage gaps; repeated-scenario analysis,No
+Member 3,Long16082004,longvu16082k4@gmail.com,Core algorithm,src/pipeline.py,5bd6923,Greedy weighted set cover implementation for T01,Pending
+Member 4,PDTnhah,phamduythanh43@gmail.com,QA / metric,src/t01_slices.py; tests/test_t01_algo.py; tests/test_t01_metric.py; reports/metric_contract.md; reports/t01_slices_visible_proxy.md,283e6b9; c9492c6; f9fbb8c,T01 metric contract, budget slices, evaluator and algorithm tests,Pending
+Member 5,Pending,Pending,Human review + report,reports/group_report.md; reports/t01_review_capture_plan.csv; demo/t01_demo.md,Pending,Report and review plan prepared; waiting for actual human review evidence,Pending

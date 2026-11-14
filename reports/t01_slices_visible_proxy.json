@@ -8,7 +8,7 @@
     20,
     30
   ],
-  "git_sha": "0a3ba2c",
+  "git_sha": "f9fbb8c",
   "command": "python -m src.t01_slices --run baseline=out/baseline/pick.csv --run poc=out/poc/pick.csv --visible-proxy --out reports/t01_slices_visible_proxy.md",
   "checks": [
     {
