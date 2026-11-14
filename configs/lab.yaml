@@ -3,7 +3,7 @@
 # the track defaults loaded from `track_config`.
 # ============================================================
 group_id: G0001
-owner: "TODO: tên người ký duyệt (role)"   # mandatory for every Decision
+owner: "Ngô Ngọc Trường (Lead)"   # mandatory for every Decision
 track_config: tracks/t01.yaml
 track: t01
 input: fixtures/t01_coverage
