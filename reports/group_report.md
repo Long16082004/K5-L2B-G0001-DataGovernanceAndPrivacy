@@ -8,10 +8,10 @@
 |---|---|
 | Group ID | G0001 |
 | Challenge | T01 · Coverage Planner |
-| Members and roles | Member 1 Lead/Integrator: Ngô Ngọc Trường (`truongnnhe172873`); Member 2 Data/Fixtures: LeVinhKhai; Member 3 Core algorithm: `Long16082004`; Member 4 QA/Metric: Pham Duy Thanh (`PDTnhah`); Member 5 Human Review/Report: name pending. |
+| Members and roles | Member 1 Lead/Integrator: Ngô Ngọc Trường (`truongnnhe172873`); Member 2 Data/Fixtures: LeVinhKhai; Member 3 Core algorithm: `Long16082004`; Member 4 QA/Metric: Pham Duy Thanh (`PDTnhah`); Member 5 Human Review/Report: kieubac2006 (`bac`). |
 | Git URL | https://github.com/Long16082004/K5-L2B-G0001-DataGovernanceAndPrivacy |
 | Branch / analyzed commit | `dev` (integration branch) · `160c449` |
-| Demo/final tags; deadline | Not present / pending |
+| Demo/final tags; deadline | `demo-180m` → `460e3e1`; `final-24h` pending; deadline pending |
 
 ## 01 · Problem statement
 
@@ -132,7 +132,7 @@ Synthetic metadata does not establish real-world scene availability, visual corr
 
 ## 10 · Team contribution
 
-See [`team_contributions.csv`](team_contributions.csv). Members 1–4 are mapped to Git authors and relevant commits from `git shortlog -sne --all` and the visible commit history. Member 5's name and commit evidence, and presenter status for most members, remain pending. Git author labels are preserved where the legal/display name is not known.
+See [`team_contributions.csv`](team_contributions.csv). Members 1–5 are mapped to Git authors and relevant commits from `git shortlog -sne --all` and the visible commit history. Member 5's chosen report name is kieubac2006 and presenter status is No. Git author labels are preserved where the legal/display name is not known.
 
 ## 11 · References
 
@@ -154,5 +154,6 @@ See [`team_contributions.csv`](team_contributions.csv). Members 1–4 are mapped
 - [x] Every reviewer decision (not only reject) is recorded in the audit log.
 - [ ] Official verified-tag evaluation / instructor result.
 - [x] Human review: 10/10 queue rows and 3 capture-plan cells reviewed by Ngô Ngọc Trường (Lead); audit evidence in `reports/t01_audit_log.jsonl`.
-- [ ] Member 5 identity/commit and presenter status; tags and deadline.
+- [x] Member 5 identity and commit evidence: kieubac2006 (`bac`), see `team_contributions.csv`.
+- [ ] `final-24h` tag and deadline.
 - [ ] Present the 4-slide demo in [`../demo/t01_demo.md`](../demo/t01_demo.md).
