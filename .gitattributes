@@ -1,0 +1,6 @@
+fixtures/**/*.csv text eol=lf
+fixtures/**/*.json text eol=lf
+fixtures/**/*.md text eol=lf
+fixtures/**/*.yaml text eol=lf
+fixtures/**/*.jpg binary
+fixtures/**/*.png binary
